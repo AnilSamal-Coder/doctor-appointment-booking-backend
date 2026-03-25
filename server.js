@@ -1,28 +1,16 @@
-import express from 'express'
-import cors from 'cors'
-import 'dotenv/config'
-import connectDB from './config/mongodb.js'
-import connectCloudinary from './config/cloudinary.js'
-import adminRouter from './routes/adminRoute.js'
+import "dotenv/config";
+import app from "./app.js";
+import logger from "./config/logger.js";
+import connectDB from "./config/mongodb.js";
 
+const PORT = process.env.PORT || 3000;
 
-//app config
-const app = express()
-const port = process.env.PORT || 4000
-connectDB()
-connectCloudinary()
+const server = app.listen(PORT, async () => {
+  await connectDB();
+  logger.info(`Server running on port ${PORT}`);
+});
 
-//middlewares
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors())
-
-//Api endpoint
-app.use('/api/admin',adminRouter)
-// localhost:4000/api/admin
-
-app.get('/',(req,res)=>{
-    res.send('API WORKING ')
-})
-
-app.listen(port, ()=> console.log("Server Started",port))
+process.on("unhandledRejection", (err) => {
+  logger.error(`Unhandled Rejection: ${err.message}`);
+  server.close(() => process.exit(1));
+});
