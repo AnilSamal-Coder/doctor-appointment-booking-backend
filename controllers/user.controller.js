@@ -1,4 +1,5 @@
-import * as userService from "../services/user.service.js"
+import * as userService from "../services/user.service.js";
+
 // Create User Signup
 export const createUser = async (req, res, next) => {
   try {
@@ -14,7 +15,8 @@ export const createUser = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
+
 // Login User
 export const loginUser = async (req, res, next) => {
   try {
@@ -28,7 +30,6 @@ export const loginUser = async (req, res, next) => {
         message: "User not found",
       });
     }
-
 
     //hide password
     user.password = undefined;
@@ -80,6 +81,27 @@ export const deleteUser = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "User deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadAvatar = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file found",
+      });
+    }
+
+    const user = await userService.uploadAvatar(req.params.id, req.file.buffer);
+
+    return res.status(200).json({
+      success: true,
+      message: "Avatar uploaded successfully",
+      data: user,
     });
   } catch (error) {
     next(error);

@@ -1,25 +1,22 @@
 import express from "express";
 import {
-    createUser,
-    loginUser,
-    getUser,
-    getAllUsers,
-    deleteUser,
-} from "../../controllers/user.controller.js"
+  createUser,
+  deleteUser,
+  getAllUsers,
+  getUser,
+  loginUser,
+  uploadAvatar,
+} from "../../controllers/user.controller.js";
 import { validate } from "../../middlewares/validate.middleware.js";
-
 import { authUser } from "../../middlewares/authUser.middleware.js";
-
 import { createUserSchema } from "../../validators/user.validator.js";
+import { upload } from "../../middlewares/upload.middleware.js";
 
 const router = express.Router();
 
-// Signup
 router.post("/", validate(createUserSchema), createUser);
-
-// Login
 router.post("/login", loginUser);
-
+router.post("/upload-avatar", upload.single("file"), uploadAvatar);
 
 // Protected routes
 router.get("/", authUser, getAllUsers);
