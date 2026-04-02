@@ -73,6 +73,20 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
+export const updateUser = async (req, res, next) => {
+  try {
+    const user = await userService.updateUser(req.params.id, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 // Delete user
 export const deleteUser = async (req, res, next) => {
   try {
