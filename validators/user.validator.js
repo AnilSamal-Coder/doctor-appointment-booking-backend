@@ -38,3 +38,17 @@ export const updateUserSchema = Joi.object({
     "string.min": "Password must be at least 8 characters",
   }),
 });
+
+export const loginUserSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": "Invalid email format",
+    "string.empty": "Email is required",
+    "any.required": "Email is required",
+  }),
+  password: Joi.string().min(8).required().messages({
+    "string.base": "Password must be a string",
+    "string.empty": "Password is required",
+    "string.min": "Password must be at least 8 characters",
+    "any.required": "Password is required",
+  }),
+});

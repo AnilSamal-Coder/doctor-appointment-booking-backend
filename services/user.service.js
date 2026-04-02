@@ -1,16 +1,17 @@
 import jwt from "jsonwebtoken";
 import * as userRepository from "../repositories/user.repository.js";
-import * as mediaService from "./media.service.js";
 
 import bcrypt from "bcrypt";
-import { BadRequestError } from "../errors/httpErrors.js";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/httpErrors.js";
+
+/* ===========Auth=========== */
 
 // Create user
 export const createUser = async (payload) => {
   // Check if user already exists
   const existingUser = await userRepository.findByEmail(payload.email);
   if (existingUser) {
-    throw new BadRequestError("User already exists");
+    throw new BadRequestError(400, "User already exists");
   }
 
   // Hash password
@@ -23,14 +24,14 @@ export const createUser = async (payload) => {
 
 // Login user
 export const loginUser = async (email, password) => {
-  const user = await userRepository.findByEmail(email);
+  const user = await userRepository.findByEmail(email).select("+password");
   if (!user) {
-    throw new NotFoundError("User not found");
+    throw new NotFoundError(404, "User not found");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new UnauthorizedError("Invalid credentials");
+    throw new UnauthorizedError(401, "Invalid credentials");
   }
 
   //create token
@@ -43,11 +44,13 @@ export const loginUser = async (email, password) => {
   return { user, token };
 };
 
+/* ======== Users ======== */
+
 // Get user by ID
 export const getUserById = async (id) => {
   const user = await userRepository.findById(id);
   if (!user) {
-    throw new NotFoundError("User not found");
+    throw new NotFoundError(404, "User not found");
   }
   return user;
 };
@@ -59,16 +62,42 @@ export const getAllUsers = async () => {
 
 // Delete user
 export const deleteUser = async (id) => {
-  return await userRepository.remove(id);
+  const user = await userRepository.findById(id);
+
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  return await userRepository.deleteUser(id);
 };
 
-export const uploadAvatar = async (userId, buffer) => {
-  const result = await mediaService.uploadImage(buffer, "users");
-  // store avatar URL and public ID in user
-  // first check public ID exists for user, if yes delete old avatar from cloudinary
+/* ===================== PROFILE ===================== */
 
-  // await mediaService.deleteImage(user.avatarPublicId);
+// Get Profile (Logged-in user)
+export const getProfile = async (userId) => {
+  const user = await userRepository.findById(userId);
 
-  //const user = await userRepository.updateAvatar(userId, result.secure_url, result.public_id);
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
   return user;
+};
+
+// Update Profile (Logged-in user)
+export const updateProfile = async (userId, data, file) => {
+  const user = await userRepository.findById(userId);
+
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  // If image uploaded
+  if (file) {
+    data.image = file.path;
+  }
+
+  const updatedUser = await userRepository.update(userId, data);
+
+  return updatedUser;
 };

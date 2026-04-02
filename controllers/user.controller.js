@@ -1,11 +1,11 @@
 import * as userService from "../services/user.service.js";
+import * as appointmentService from "../services/appointment.service.js";
 
 // Create User Signup
 export const createUser = async (req, res, next) => {
   try {
     const payload = req.body;
     const user = await userService.createUser(payload);
-    user.password = undefined;
 
     return res.status(201).json({
       success: true,
@@ -16,23 +16,12 @@ export const createUser = async (req, res, next) => {
     next(error);
   }
 };
-
 // Login User
 export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     const { user, token } = await userService.loginUser(email, password);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    //hide password
-    user.password = undefined;
 
     return res.status(200).json({
       success: true,
@@ -45,21 +34,9 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
-// Get user by ID
-export const getUser = async (req, res, next) => {
-  try {
-    const user = await userService.getUserById(req.params.id);
+/* ===================== USERS ===================== */
 
-    return res.status(200).json({
-      success: true,
-      data: user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Get all users
+// Get All Users
 export const getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
@@ -73,21 +50,21 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
-export const updateUser = async (req, res, next) => {
+// Get User by ID
+export const getUser = async (req, res, next) => {
   try {
-    const user = await userService.updateUser(req.params.id, req.body);
+    const user = await userService.getUserById(req.params.id);
 
     return res.status(200).json({
       success: true,
-      message: "User updated successfully",
       data: user,
     });
   } catch (error) {
     next(error);
   }
-}
+};
 
-// Delete user
+// Delete User
 export const deleteUser = async (req, res, next) => {
   try {
     await userService.deleteUser(req.params.id);
@@ -115,6 +92,106 @@ export const uploadAvatar = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Avatar uploaded successfully",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* ========== PROFILES ========== */
+
+//Get Profile
+export const getProfile = async (req, res, next) => {
+  try {
+    const user = await userService.getUserById(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update Profile
+export const updateProfile = async (req, res, next) => {
+  try {
+    const updatedUser = await userService.updateProfile(
+      req.user.id,
+      req.body,
+      req.file,
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* ===================== APPOINTMENTS ===================== */
+
+// Book Appointment
+export const bookAppointment = async (req, res, next) => {
+  try {
+    const appointment = await appointmentService.bookAppointment(
+      req.user.id,
+      req.body,
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Appointment booked successfully",
+      data: appointment,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get Appointments
+export const listAppointment = async (req, res, next) => {
+  try {
+    const appointments = await appointmentService.getAppointments(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      data: appointments,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Cancel Appointment
+export const cancelAppointment = async (req, res, next) => {
+  try {
+    const appointment = await appointmentService.cancelAppointment(
+      req.params.id,
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Appointment cancelled successfully",
+      data: appointment,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUser = async (req, res, next) => {
+  try {
+    const user = await userService.updateUser(req.params.id, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
       data: user,
     });
   } catch (error) {
