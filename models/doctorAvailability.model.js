@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const availabilitySchema = new mongoose.Schema(
+const doctorAvailabilitySchema = new mongoose.Schema(
   {
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -17,4 +17,4 @@ const availabilitySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Availability", availabilitySchema);
+export default mongoose.model("DoctorAvailability", doctorAvailabilitySchema);
