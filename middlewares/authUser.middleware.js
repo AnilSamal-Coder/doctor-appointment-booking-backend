@@ -5,11 +5,9 @@ export const authUser = (req, res, next) => {
     let token;
 
     // 1. Get token from header
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
-      token = req.headers.authorization.split(" ")[1];
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
     }
 
     // 2. If no token
@@ -30,7 +28,8 @@ export const authUser = (req, res, next) => {
   } catch (error) {
     return res.status(401).json({
       success: false,
-      message: "Invalid token",
+      message:
+        error.name === "TokenExpiredError" ? "Token expired" : "Invalid token",
     });
   }
 };
