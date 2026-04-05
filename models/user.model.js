@@ -25,28 +25,32 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["male", "female", "other"],
+      required: true,
+      enum: ["MALE", "FEMALE", "OTHER"],
     },
     age: {
       type: Number,
+      required: true,
       min: 1,
       max: 120,
     },
     phone: {
+      required: true,
       type: String,
       match: [/^[0-9]{10}$/, "Phone must be 10 digits"],
     },
-    image: {
+    profileImage: {
       type: String,
       default: "",
     },
+    profileImagePublicId: {
+      type: String,
+    },
     role: {
       type: String,
-      enum: ["user", "doctor", "admin"],
-      default: "user",
+      enum: ["USER", "DOCTOR", "ADMIN"],
+      default: "USER",
     },
-
-
   },
   {
     timestamps: true,

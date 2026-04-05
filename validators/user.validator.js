@@ -19,8 +19,8 @@ export const createUserSchema = Joi.object({
     "string.min": "Password must be at least 8 characters",
     "any.required": "Password is required",
   }),
-  gender: Joi.string().valid("male", "female", "other").required().messages({
-    "any.only": "Gender must be male, female, or other",
+  gender: Joi.string().valid("MALE", "FEMALE", "OTHER").required().messages({
+    "any.only": "Gender must be Male, Female, or Other",
     "string.empty": "Gender is required",
     "any.required": "Gender is required",
   }),
@@ -54,8 +54,8 @@ export const updateUserSchema = Joi.object({
     "string.empty": "Password cannot be empty",
     "string.min": "Password must be at least 8 characters",
   }),
-  gender: Joi.string().valid("male", "female", "other").required().messages({
-    "any.only": "Gender must be male, female, or other",
+  gender: Joi.string().valid("MALE", "FEMALE", "OTHER").required().messages({
+    "any.only": "Gender must be MALE, FEMALE, or OTHER",
     "string.empty": "Gender is required",
     "any.required": "Gender is required",
   }),

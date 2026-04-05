@@ -8,7 +8,7 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-     doctorId: {
+    doctorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "DoctorProfile",
       required: true,
@@ -20,7 +20,7 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
       unique: true, // Prevent double booking
     },
-     appointmentDate: {
+    appointmentDate: {
       type: Date,
       required: true,
       index: true,
@@ -39,7 +39,7 @@ const appointmentSchema = new mongoose.Schema(
       default: "BOOKED",
       index: true,
     },
-     reason: {
+    reason: {
       type: String,
       maxlength: 300,
     },
@@ -55,13 +55,8 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       enum: ["PATIENT", "DOCTOR", "ADMIN"],
     },
-    paymentStatus: {
-      type: String,
-      enum: ["PENDING", "PAID", "FAILED"],
-      default: "PENDING",
-     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Appointment", appointmentSchema);

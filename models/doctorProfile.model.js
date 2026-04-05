@@ -1,5 +1,5 @@
-import { required } from "joi";
 import mongoose from "mongoose";
+
 const SPECIALIZATIONS = [
   "General Physician",
   "Gynaecologist",
@@ -8,6 +8,7 @@ const SPECIALIZATIONS = [
   "Neurologist",
   "Gastroenterologist",
 ];
+
 const doctorProfileSchema = new mongoose.Schema(
   {
     userId: {
@@ -22,7 +23,7 @@ const doctorProfileSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    experienceYears: {
+    experienceInYears: {
       type: Number,
       required: true,
       min: 0,
@@ -49,12 +50,6 @@ const doctorProfileSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    rating: {
-      type: Number,
-      min: 0,
-      max: 5,
-      default: 0,
-    }
   },
   { timestamps: true },
 );

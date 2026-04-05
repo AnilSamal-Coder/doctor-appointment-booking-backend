@@ -38,11 +38,12 @@ router.put("/profile", validate(updateUserSchema), updateProfile);
 router.post("/profile/avatar", upload.single("file"), uploadAvatar);
 router.delete("/profile", deleteUser);
 
+
+/* This endpoint not require for user, move to admin routes and also create these method in admin controller and admin service */
 /* ===== USERS (ADMIN) ===== */
-router.get("/", getAllUsers);
-router.get("/:id", getUser);
-router.patch("/:id", validate(updateUserSchema), updateUser);
-router.delete("/:id", deleteUser);
+// router.get("/", getAllUsers);
+// router.get("/:id", getUser);
+// router.delete("/:id", deleteUser);
 
 /* ===== APPOINTMENTS ===== */
 router.post("/appointments", bookAppointment);

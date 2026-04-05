@@ -1,6 +1,6 @@
 import * as userService from "../services/user.service.js";
 
-// Create User Signup
+// Create User
 export const createUser = async (req, res, next) => {
   try {
     const payload = req.body;
@@ -15,6 +15,7 @@ export const createUser = async (req, res, next) => {
     next(error);
   }
 };
+
 // Login User
 export const loginUser = async (req, res, next) => {
   try {
@@ -66,7 +67,7 @@ export const getUser = async (req, res, next) => {
 // Delete User
 export const deleteUser = async (req, res, next) => {
   try {
-    await userService.deleteUser(req.params.id);
+    await userService.deleteUser(req.user.id);
 
     return res.status(200).json({
       success: true,
@@ -86,7 +87,7 @@ export const uploadAvatar = async (req, res, next) => {
       });
     }
 
-    const user = await userService.uploadAvatar(req.params.id, req.file.buffer);
+    const user = await userService.uploadAvatar(req.user.id, req.file.buffer);
 
     return res.status(200).json({
       success: true,
@@ -103,7 +104,7 @@ export const uploadAvatar = async (req, res, next) => {
 //Get Profile
 export const getProfile = async (req, res, next) => {
   try {
-    const user = await userService.getUserById(req.user.id);
+    const user = await userService.getProfile(req.user.id);
 
     return res.status(200).json({
       success: true,
@@ -117,11 +118,7 @@ export const getProfile = async (req, res, next) => {
 // Update Profile
 export const updateProfile = async (req, res, next) => {
   try {
-    const user = await userService.updateProfile(
-      req.user.id,
-      req.body,
-      req.file,
-    );
+    const user = await userService.updateProfile(req.user.id, req.body);
 
     return res.status(200).json({
       success: true,
@@ -143,6 +140,12 @@ export const bookAppointment = async (req, res, next) => {
       req.body,
     );
 
+    /* in request we will get timeslot id
+    from timeslot id get timeslot details and doctor details
+    create appointment with user id, doctor id, timeslot details, and other details
+    also mark the timeslot as booked so that it cannot be booked by another user
+    */
+
     return res.status(201).json({
       success: true,
       message: "Appointment booked successfully",
@@ -158,6 +161,9 @@ export const listAppointment = async (req, res, next) => {
   try {
     const appointments = await userService.getAppointments(req.user.id);
 
+    // in appointment model search user by patient id
+    // also populate doctor details and timeslot details
+
     return res.status(200).json({
       success: true,
       data: appointments,
@@ -170,9 +176,11 @@ export const listAppointment = async (req, res, next) => {
 // Cancel Appointment
 export const cancelAppointment = async (req, res, next) => {
   try {
-    const appointment = await userService.cancelAppointment(
-      req.params.id,
-    );
+    const appointment = await userService.cancelAppointment(req.user.id);
+
+    // in response we will get appointment id
+    // search appointment by id and user id (to ensure that user can only cancel their own appointment)
+    // also mark the timeslot as available again
 
     return res.status(200).json({
       success: true,
@@ -191,7 +199,7 @@ export const updateUser = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "User updated successfully",
-      data: user, 
+      data: user,
     });
   } catch (error) {
     next(error);

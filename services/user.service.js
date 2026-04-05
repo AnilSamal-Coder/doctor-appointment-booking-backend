@@ -1,17 +1,19 @@
 import jwt from "jsonwebtoken";
 import * as userRepository from "../repositories/user.repository.js";
-
 import bcrypt from "bcrypt";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/httpErrors.js";
-
-/* ===========Auth=========== */
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from "../errors/httpErrors.js";
+import * as mediaService from "./media.service.js";
 
 // Create user
 export const createUser = async (payload) => {
   // Check if user already exists
   const existingUser = await userRepository.findByEmail(payload.email);
   if (existingUser) {
-    throw new BadRequestError(400, "User already exists");
+    throw new BadRequestError("User already exists with this email");
   }
 
   // Hash password
@@ -26,12 +28,12 @@ export const createUser = async (payload) => {
 export const loginUser = async (email, password) => {
   const user = await userRepository.findByEmail(email).select("+password");
   if (!user) {
-    throw new NotFoundError(404, "User not found");
+    throw new NotFoundError("User not found");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new UnauthorizedError(401, "Invalid credentials");
+    throw new UnauthorizedError("Invalid email or password");
   }
 
   //create token
@@ -50,7 +52,7 @@ export const loginUser = async (email, password) => {
 export const getUserById = async (id) => {
   const user = await userRepository.findById(id);
   if (!user) {
-    throw new NotFoundError(404, "User not found");
+    throw new NotFoundError("User not found");
   }
   return user;
 };
@@ -85,16 +87,11 @@ export const getProfile = async (userId) => {
 };
 
 // Update Profile (Logged-in user)
-export const updateProfile = async (userId, data, file) => {
+export const updateProfile = async (userId, data) => {
   const user = await userRepository.findById(userId);
 
   if (!user) {
     throw new NotFoundError("User not found");
-  }
-
-  // If image uploaded
-  if (file) {
-    data.image = file.path;
   }
 
   const updatedUser = await userRepository.update(userId, data);
@@ -112,4 +109,23 @@ export const updateUser = async (id, data) => {
   const updatedUser = await userRepository.update(id, data);
 
   return updatedUser;
+};
+
+export const uploadAvatar = async (userId, fileBuffer) => {
+  const user = await userRepository.findById(userId);
+
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  const uploadResponse = await mediaService.uploadImage(fileBuffer);
+
+  if (uploadResponse.secure_url && user.profileImagePublicId) {
+    await mediaService.deleteImage(user.profileImagePublicId);
+  }
+
+  return await userRepository.update(userId, {
+    profileImage: uploadResponse.secure_url,
+    profileImagePublicId: uploadResponse.public_id,
+  });
 };
