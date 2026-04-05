@@ -1,5 +1,4 @@
 import * as userService from "../services/user.service.js";
-import * as appointmentService from "../services/appointment.service.js";
 
 // Create User Signup
 export const createUser = async (req, res, next) => {
@@ -118,7 +117,7 @@ export const getProfile = async (req, res, next) => {
 // Update Profile
 export const updateProfile = async (req, res, next) => {
   try {
-    const updatedUser = await userService.updateProfile(
+    const user = await userService.updateProfile(
       req.user.id,
       req.body,
       req.file,
@@ -139,7 +138,7 @@ export const updateProfile = async (req, res, next) => {
 // Book Appointment
 export const bookAppointment = async (req, res, next) => {
   try {
-    const appointment = await appointmentService.bookAppointment(
+    const appointment = await userService.bookAppointment(
       req.user.id,
       req.body,
     );
@@ -157,7 +156,7 @@ export const bookAppointment = async (req, res, next) => {
 // Get Appointments
 export const listAppointment = async (req, res, next) => {
   try {
-    const appointments = await appointmentService.getAppointments(req.user.id);
+    const appointments = await userService.getAppointments(req.user.id);
 
     return res.status(200).json({
       success: true,
@@ -171,7 +170,7 @@ export const listAppointment = async (req, res, next) => {
 // Cancel Appointment
 export const cancelAppointment = async (req, res, next) => {
   try {
-    const appointment = await appointmentService.cancelAppointment(
+    const appointment = await userService.cancelAppointment(
       req.params.id,
     );
 
@@ -192,7 +191,7 @@ export const updateUser = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "User updated successfully",
-      data: user,
+      data: user, 
     });
   } catch (error) {
     next(error);

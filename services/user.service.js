@@ -101,3 +101,15 @@ export const updateProfile = async (userId, data, file) => {
 
   return updatedUser;
 };
+
+export const updateUser = async (id, data) => {
+  const user = await userRepository.findById(id);
+
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  const updatedUser = await userRepository.update(id, data);
+
+  return updatedUser;
+};

@@ -19,6 +19,23 @@ export const createUserSchema = Joi.object({
     "string.min": "Password must be at least 8 characters",
     "any.required": "Password is required",
   }),
+  gender: Joi.string().valid("male", "female", "other").required().messages({
+    "any.only": "Gender must be male, female, or other",
+    "string.empty": "Gender is required",
+    "any.required": "Gender is required",
+  }),
+  age: Joi.number().integer().min(1).max(120).required().messages({
+    "number.base": "Age must be a number",
+    "number.min": "Age must be at least 1",
+    "number.max": "Age must be less than 120",
+    "any.required": "Age is required",
+  }),
+  phone: Joi.string()
+    .pattern(/^[0-9]{10}$/)
+    .optional()
+    .messages({
+      "string.pattern.base": "Phone must be 10 digits",
+    }),
 });
 
 export const updateUserSchema = Joi.object({
@@ -36,6 +53,17 @@ export const updateUserSchema = Joi.object({
     "string.base": "Password must be a string",
     "string.empty": "Password cannot be empty",
     "string.min": "Password must be at least 8 characters",
+  }),
+  gender: Joi.string().valid("male", "female", "other").required().messages({
+    "any.only": "Gender must be male, female, or other",
+    "string.empty": "Gender is required",
+    "any.required": "Gender is required",
+  }),
+  age: Joi.number().integer().min(1).max(120).required().messages({
+    "number.base": "Age must be a number",
+    "number.min": "Age must be at least 1",
+    "number.max": "Age must be less than 120",
+    "any.required": "Age is required",
   }),
 });
 

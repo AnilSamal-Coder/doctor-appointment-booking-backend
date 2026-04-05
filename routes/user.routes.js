@@ -1,10 +1,18 @@
 import express from "express";
 import {
   createUser,
-  deleteUser,
+  loginUser,
+  getAllUsers,
   getUser,
-  updateUser,
+  deleteUser,
+  getProfile,
+  updateProfile,
   uploadAvatar,
+  bookAppointment,
+  listAppointment,
+  cancelAppointment,
+  updateUser
+
 } from "../controllers/user.controller.js";
 import { authUser } from "../middlewares/authUser.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
@@ -12,41 +20,34 @@ import { validate } from "../middlewares/validate.middleware.js";
 import {
   createUserSchema,
   updateUserSchema,
+  loginUserSchema
 } from "../validators/user.validator.js";
 
 const router = express.Router();
 
+/* ================= PUBLIC ================= */
 router.post("/", validate(createUserSchema), createUser);
+router.post("/login", validate(loginUserSchema), loginUser);
 
+/* ================= PROTECTED ================= */
 router.use(authUser);
 
-router.get("/me", getUser);
+/* ===== PROFILE ===== */
+router.get("/profile", getProfile);
+router.put("/profile", validate(updateUserSchema), updateProfile);
+router.post("/profile/avatar", upload.single("file"), uploadAvatar);
+router.delete("/profile", deleteUser);
 
-router.patch("/me", validate(updateUserSchema), updateUser);
+/* ===== USERS (ADMIN) ===== */
+router.get("/", getAllUsers);
+router.get("/:id", getUser);
+router.patch("/:id", validate(updateUserSchema), updateUser);
+router.delete("/:id", deleteUser);
 
-router.post("/me/avatar", upload.single("file"), uploadAvatar);
-
-router.delete("/me", deleteUser);
-
+/* ===== APPOINTMENTS ===== */
+router.post("/appointments", bookAppointment);
+router.get("/appointments", listAppointment);
+router.delete("/appointments/:id", cancelAppointment);
 export default router;
 
-// router.post("/", validate(createUserSchema), createUser);
-// router.post("/login", loginUser);
-// router.post("/upload-avatar", upload.single("file"), uploadAvatar);
 
-// // ================= PROTECTED ================= //
-// router.use(authUser);
-
-// // ================= PROFILE ================= //
-// router.get("/profile", getProfile);
-// router.put("/profile", updateProfile);
-
-// // ================= USERS ================= //
-// router.get("/", getAllUsers);
-// router.get("/:id", getUser);
-// router.delete("/:id", deleteUser);
-
-// // Appointment APIs
-// router.post("/appointment", bookAppointment);
-// router.get("/appointment", listAppointment);
-// router.delete("/appointment/:id", cancelAppointment);
